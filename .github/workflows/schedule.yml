@@ -1,17 +1,37 @@
-name: Update gist with WakaTime stats
+
+name: Update Stats Gists
+
 on:
   schedule:
     - cron: "0 0 * * *"
-  # Manual triggers with workflow_dispatch
   workflow_dispatch:
+
 jobs:
-  update-gist:
+  update-wakatime-gist:
+    name: Update WakaTime Stats
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Update gist
+      - uses: actions/checkout@v4
+
+      - name: Update WakaTime Gist
         uses: ./
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GIST_ID: ${{ secrets.GIST_ID }}
+          GIST_ID: ${{ secrets.GIST_WEEKLY_STAT_ID }}
           WAKATIME_API_KEY: ${{ secrets.WAKATIME_API_KEY }}
+
+  update-github-stats-gist:
+    name: Update GitHub Stats Gist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Update GitHub Stats Gist
+        run: npx github-stats-box@1
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_STATS_ID }}
+          ALL_COMMITS: "true"
+          K_FORMAT: "false"
